@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: order-app-api
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lita_order}
+    username: ${DB_USERNAME:lita}
+    password: ${DB_PASSWORD:lita_dev_password}
+
+  jpa:
+    hibernate:
+      # Flyway เป็นเจ้าของ schema ทั้งหมด Hibernate ไม่ต้องสร้างและไม่ต้องตรวจ
+      # (ถ้าอยากให้เตือนตอน entity กับตารางไม่ตรงกัน เปลี่ยนเป็น validate ได้)
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: ${PORT:8080}
+
+lita:
+  jwt:
+    # production ต้อง override ด้วย env JWT_SECRET เสมอ (อย่างน้อย 32 ตัวอักษร)
+    secret: ${JWT_SECRET:dev-secret-key-change-me-in-production-please-32}
+    expiration-hours: ${JWT_EXPIRATION_HOURS:12}
+  cors:
+    # URL ของ frontend ที่อนุญาตให้เรียก API ได้
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:4173}
+
+  # ผังโต๊ะของสาขานี้ — เพิ่ม/ลดโต๊ะได้ที่นี่โดยไม่ต้องแก้โค้ด
+  tables:
+    - { tableNo: T1, seats: 2 }
+    - { tableNo: T2, seats: 2 }
+    - { tableNo: T3, seats: 4 }
+    - { tableNo: T4, seats: 4 }
+    - { tableNo: T5, seats: 4 }
+    - { tableNo: T6, seats: 6 }
+    - { tableNo: T7, seats: 2 }
+    - { tableNo: T8, seats: 4 }
+    - { tableNo: T9, seats: 4 }
+    - { tableNo: T10, seats: 8 }
+
+logging:
+  level:
+    com.lita.orderapi: DEBUG

@@ -1,0 +1,165 @@
+### ====================================================================
+### ไฟล์ทดสอบ API — เปิดด้วย IntelliJ HTTP Client หรือ VS Code REST Client
+### กดรันทีละ request จากบนลงล่าง ตัวแปร token จะถูกเก็บให้อัตโนมัติ
+### ====================================================================
+
+@host = http://localhost:8080
+
+### ---------- 1. เข้าสู่ระบบด้วยสิทธิ์ ADMIN ----------
+# @name loginAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin1234"
+}
+
+> {% client.global.set("adminToken", response.body.token); %}
+
+### ---------- 2. เข้าสู่ระบบด้วยสิทธิ์ STAFF ----------
+# @name loginStaff
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "staff",
+  "password": "staff1234"
+}
+
+> {% client.global.set("staffToken", response.body.token); %}
+
+### ---------- 3. ดูข้อมูลตัวเอง ----------
+GET {{host}}/api/auth/me
+Authorization: Bearer {{staffToken}}
+
+### ---------- 4. ดูเมนูทั้งหมด (STAFF ดูได้) ----------
+GET {{host}}/api/menus
+Authorization: Bearer {{staffToken}}
+
+### ---------- 5. ผังโต๊ะ ----------
+GET {{host}}/api/tables
+Authorization: Bearer {{staffToken}}
+
+### ---------- 6. สั่งอาหารเข้าครัว (ทานที่ร้าน โต๊ะ T3) ----------
+# เปลี่ยน menuId ให้ตรงกับที่ได้จากข้อ 4 ก่อนรัน
+# @name createOrder
+POST {{host}}/api/orders
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{
+  "orderType": "DINE_IN",
+  "tableNo": "T3",
+  "note": "ขอช้อนส้อม 2 ชุด",
+  "items": [
+    {
+      "menuId": "c0000000-0000-4000-8000-000000000010",
+      "qty": 1,
+      "options": [
+        { "groupId": "a0000000-0000-4000-8000-000000000001", "choiceId": "b0000000-0000-4000-8000-000000000002" },
+        { "groupId": "a0000000-0000-4000-8000-000000000002", "choiceId": "b0000000-0000-4000-8000-000000000005" },
+        { "groupId": "a0000000-0000-4000-8000-000000000004", "choiceId": "b0000000-0000-4000-8000-000000000012" }
+      ]
+    }
+  ]
+}
+
+> {%
+  client.global.set("orderId", response.body.id);
+  client.global.set("trackingToken", response.body.trackingToken);
+%}
+
+### ---------- 7. ออเดอร์ที่ยังไม่จบ (กระดานครัว) ----------
+GET {{host}}/api/orders/active
+Authorization: Bearer {{staffToken}}
+
+### ---------- 8. เริ่มทำ ----------
+PATCH {{host}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "status": "PREPARING" }
+
+### ---------- 9. ทำเสร็จแล้ว ----------
+PATCH {{host}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "status": "READY" }
+
+### ---------- 10. เสิร์ฟแล้ว (ทานที่ร้านจะหยุดที่ SERVED) ----------
+PATCH {{host}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "status": "SERVED" }
+
+### ---------- 11. ลูกค้าสแกน QR ดูสถานะ (ไม่ต้องใส่ token) ----------
+GET {{host}}/api/public/orders/{{trackingToken}}
+
+### ---------- 12. เช็คบิลและเก็บโต๊ะ ----------
+POST {{host}}/api/tables/T3/close
+Authorization: Bearer {{staffToken}}
+
+### ---------- 13. ประวัติออเดอร์ ----------
+GET {{host}}/api/orders?page=0&size=25
+Authorization: Bearer {{staffToken}}
+
+### ====================================================================
+### ทดสอบสิทธิ์ — ข้อ 14-17 คือหัวใจของ requirement เรื่อง Role
+### ====================================================================
+
+### ---------- 14. STAFF เปิด Dashboard → ต้องได้ 403 ----------
+GET {{host}}/api/dashboard/summary
+Authorization: Bearer {{staffToken}}
+
+### ---------- 15. ADMIN เปิด Dashboard → ต้องได้ 200 ----------
+GET {{host}}/api/dashboard/summary?days=14
+Authorization: Bearer {{adminToken}}
+
+### ---------- 16. STAFF ลบเมนู → ต้องได้ 403 ----------
+DELETE {{host}}/api/menus/c0000000-0000-4000-8000-000000000019
+Authorization: Bearer {{staffToken}}
+
+### ---------- 17. STAFF กดปิดขายเมนู → ต้องได้ 200 (ของหมดเป็นงานหน้างาน) ----------
+PATCH {{host}}/api/menus/c0000000-0000-4000-8000-000000000019/availability
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "available": false }
+
+### ---------- 18. ADMIN เพิ่มเมนูใหม่ ----------
+POST {{host}}/api/menus
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Pistachio Cold Brew",
+  "nameTh": "โคลด์บรูว์พิสตาชิโอ",
+  "description": "โคลด์บรูว์กับครีมพิสตาชิโอ",
+  "price": 120,
+  "category": "DRINK",
+  "emoji": "🧋",
+  "available": true,
+  "optionGroupIds": ["a0000000-0000-4000-8000-000000000001"]
+}
+
+### ---------- 19. ADMIN สร้างกลุ่มตัวเลือกใหม่ ----------
+POST {{host}}/api/option-groups
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "ระดับความเข้ม",
+  "type": "SINGLE",
+  "required": true,
+  "choices": [
+    { "name": "อ่อน", "priceDelta": 0 },
+    { "name": "ปกติ", "priceDelta": 0 },
+    { "name": "เข้มพิเศษ", "priceDelta": 15 }
+  ]
+}
+
+### ---------- 20. ไม่ส่ง token เลย → ต้องได้ 401 ----------
+GET {{host}}/api/menus

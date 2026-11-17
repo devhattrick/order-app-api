@@ -1,0 +1,21 @@
+# Postgres สำหรับ develop บนเครื่อง — ฟรี และไม่กินโควต้า Neon
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: lita-postgres
+    environment:
+      POSTGRES_DB: lita_order
+      POSTGRES_USER: lita
+      POSTGRES_PASSWORD: lita_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - lita-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lita -d lita_order"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  lita-pgdata:
