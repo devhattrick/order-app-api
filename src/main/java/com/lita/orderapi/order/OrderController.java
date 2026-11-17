@@ -11,9 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.security.Principal;
 import java.time.Instant;
@@ -29,7 +27,6 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
-    private final OrderEventPublisher events;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -93,14 +90,4 @@ public class OrderController {
         }
     }
 
-    /**
-     * เปิดช่องรับ event ออเดอร์แบบ realtime
-     *
-     * หมายเหตุ: EventSource ของเบราว์เซอร์ใส่ Authorization header ไม่ได้
-     * ฝั่ง frontend จึงต้องส่ง token มาทาง query string แทน
-     */
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter stream() {
-        return events.subscribe();
-    }
 }

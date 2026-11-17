@@ -30,7 +30,6 @@ public class OrderService {
     private final OrderRepository orders;
     private final MenuService menuService;
     private final DocumentNumberService documentNumbers;
-    private final OrderEventPublisher events;
 
     // ---------------------------------------------------------------
     // สร้างออเดอร์
@@ -66,9 +65,7 @@ public class OrderService {
 
         order.changeStatus(OrderStatus.PENDING, username);
 
-        ShopOrder saved = orders.save(order);
-        events.publishOrderCreated(saved);
-        return saved;
+        return orders.save(order);
     }
 
     /**
@@ -183,9 +180,7 @@ public class OrderService {
 
         if (target == OrderStatus.CANCELLED) {
             order.changeStatus(OrderStatus.CANCELLED, username);
-            ShopOrder saved = orders.save(order);
-            events.publishOrderUpdated(saved);
-            return saved;
+            return orders.save(order);
         }
 
         OrderStatus allowedNext = current.next(order.getOrderType());
@@ -203,9 +198,7 @@ public class OrderService {
             order.setPaidAt(Instant.now());
         }
 
-        ShopOrder saved = orders.save(order);
-        events.publishOrderUpdated(saved);
-        return saved;
+        return orders.save(order);
     }
 
     // ---------------------------------------------------------------

@@ -7,6 +7,14 @@ spring:
     username: ${DB_USERNAME:lita}
     password: ${DB_PASSWORD:lita_dev_password}
 
+    # ปล่อย connection ทิ้งเมื่อไม่มีใครใช้ เพื่อให้ serverless database (Neon)
+    # autosuspend ได้จริง ถ้าถือ connection ค้างไว้ database จะไม่หลับ
+    # แล้วกิน CU-hours ของ free tier ทิ้งทั้งวัน ทั้งที่ไม่มีใครสั่งอาหาร
+    hikari:
+      minimum-idle: 0
+      idle-timeout: 60000
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+
   jpa:
     hibernate:
       # Flyway เป็นเจ้าของ schema ทั้งหมด Hibernate ไม่ต้องสร้างและไม่ต้องตรวจ

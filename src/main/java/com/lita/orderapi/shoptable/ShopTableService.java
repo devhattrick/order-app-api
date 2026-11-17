@@ -23,7 +23,6 @@ public class ShopTableService {
 
     private final ShopTableProperties properties;
     private final OrderRepository orders;
-    private final OrderEventPublisher events;
 
     @Transactional(readOnly = true)
     public List<TableStateDto> getAllTableStates() {
@@ -89,8 +88,6 @@ public class ShopTableService {
             }
         });
 
-        List<ShopOrder> saved = orders.saveAll(active);
-        saved.forEach(events::publishOrderUpdated);
-        return saved;
+        return orders.saveAll(active);
     }
 }

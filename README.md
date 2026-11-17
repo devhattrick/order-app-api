@@ -100,7 +100,6 @@ Flyway จะสร้างตารางและใส่เมนูตั�
 | GET | `/api/orders/{id}` | |
 | PATCH | `/api/orders/{id}/status` | `{ "status": "PREPARING" }` |
 | GET | `/api/orders?from=&to=&status=&orderType=&keyword=&page=&size=` | ประวัติ |
-| GET | `/api/orders/stream?token=` | SSE realtime |
 
 ### ผังโต๊ะ
 | Method | Path |
@@ -160,7 +159,7 @@ com.lita.orderapi
 ├── user/        ผู้ใช้งานและสิทธิ์
 ├── menu/        เมนู
 ├── option/      กลุ่มตัวเลือกเสริม
-├── order/       ออเดอร์ · เลขที่เอกสาร · SSE
+├── order/       ออเดอร์ · เลขที่เอกสาร
 ├── shoptable/   ผังโต๊ะ · เช็คบิล
 ├── dashboard/   รายงานยอดขาย
 ├── common/      error handling ส่วนกลาง
@@ -175,6 +174,6 @@ com.lita.orderapi
 |---|---|---|
 | Dashboard | กวาดออเดอร์ในช่วงมาคำนวณใน memory | ตารางสรุปรายวัน (pre-aggregate) |
 | ความสัมพันธ์ของ order | โหลดแบบ EAGER ทั้งหมด | ปรับเป็น LAZY + fetch join เมื่อข้อมูลโตขึ้น |
-| SSE | เก็บ emitter ไว้ใน memory ของ instance เดียว | ถ้ารันหลาย instance ต้องมี Redis pub/sub คั่น |
+| ความสดของข้อมูล | หน้าร้าน poll `/api/orders/active` ทุก 5 วินาที | ถ้าต้องการทันทีจริง ๆ ต้องกลับไปใช้ SSE/WebSocket ซึ่งต้องใช้ hosting ที่คิดเงินแบบคงที่ ไม่ใช่ serverless |
 | Refresh token | ยังไม่มี — token หมดอายุแล้ว login ใหม่ | เพิ่ม refresh token ถ้าอายุ token สั้นลง |
 | จัดการผู้ใช้ | seed ตอนสตาร์ทอย่างเดียว | หน้าจัดการ user สำหรับ ADMIN |

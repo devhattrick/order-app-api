@@ -61,18 +61,13 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         /*
-                         * ปล่อย dispatch ที่ไม่ใช่ request แรกผ่านไป
+                         * ปล่อย ERROR dispatch ผ่านไป เพื่อให้ Spring Boot render หน้า error
+                         * ของตัวเองได้ ไม่งั้น error เล็ก ๆ จะกลายเป็น 403 ที่ไล่หาสาเหตุยาก
                          *
-                         * SSE (/api/orders/stream) เป็น async request — Tomcat จะ dispatch กลับเข้า
-                         * filter chain อีกรอบตอนปิด connection แต่ตอนนั้น SecurityContext ถูกล้างไปแล้ว
-                         * (เราตั้ง STATELESS ไว้ และ JwtAuthFilter เป็น OncePerRequestFilter
-                         * ซึ่งไม่ทำงานซ้ำบน dispatch แบบ ASYNC)
-                         * ถ้าไม่ปล่อยตรงนี้จะได้ AccessDeniedException ทุกครั้งที่ลูกค้าปิดแท็บ
-                         *
-                         * ไม่ใช่ช่องโหว่ เพราะ ASYNC/ERROR dispatch เกิดได้เฉพาะกับ request
-                         * ที่ผ่านการตรวจสิทธิ์ในรอบแรกมาแล้วเท่านั้น
+                         * ไม่ใช่ช่องโหว่ เพราะ ERROR dispatch เกิดได้เฉพาะกับ request
+                         * ที่ผ่าน filter chain รอบแรกมาแล้วเท่านั้น
                          */
-                        .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/public/**").permitAll()

@@ -59,20 +59,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     /**
-     * ปกติอ่าน token จาก header
+     * อ่าน token จาก header เท่านั้น
      *
-     * <p>ยกเว้น SSE ({@code /api/orders/stream}) ที่ต้องยอมรับ {@code ?token=}
-     * ด้วย เพราะ EventSource ของเบราว์เซอร์ใส่ custom header ไม่ได้
+     * <p>เคยรองรับ {@code ?token=} ใน query string ด้วย เพราะ EventSource
+     * ที่ใช้ทำ SSE ใส่ custom header ไม่ได้ แต่ตอนนี้เปลี่ยนไปใช้ polling แล้ว
+     * จึงถอดออกเพื่อความปลอดภัย — token ที่อยู่ใน URL มีโอกาสติดไปกับ
+     * access log, browser history และ Referer header ส่วนที่อยู่ใน header ไม่ติด
      */
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(HEADER);
         if (header != null && header.startsWith(PREFIX)) {
             return header.substring(PREFIX.length());
-        }
-
-        String queryToken = request.getParameter("token");
-        if (queryToken != null && !queryToken.isBlank()) {
-            return queryToken;
         }
         return null;
     }
