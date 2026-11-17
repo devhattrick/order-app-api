@@ -8,7 +8,8 @@ services:
       POSTGRES_USER: lita
       POSTGRES_PASSWORD: lita_dev_password
     ports:
-      - "5432:5432"
+      # ใช้ 5433 ฝั่ง host กันชนกับ Postgres ตัวอื่นที่อาจรันอยู่แล้วบนเครื่อง
+      - "5433:5432"
     volumes:
       - lita-pgdata:/var/lib/postgresql/data
     healthcheck:

@@ -3,6 +3,7 @@ package com.lita.orderapi.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lita.orderapi.auth.JwtAuthFilter;
 import com.lita.orderapi.common.ApiError;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +60,19 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+                        /*
+                         * ปล่อย dispatch ที่ไม่ใช่ request แรกผ่านไป
+                         *
+                         * SSE (/api/orders/stream) เป็น async request — Tomcat จะ dispatch กลับเข้า
+                         * filter chain อีกรอบตอนปิด connection แต่ตอนนั้น SecurityContext ถูกล้างไปแล้ว
+                         * (เราตั้ง STATELESS ไว้ และ JwtAuthFilter เป็น OncePerRequestFilter
+                         * ซึ่งไม่ทำงานซ้ำบน dispatch แบบ ASYNC)
+                         * ถ้าไม่ปล่อยตรงนี้จะได้ AccessDeniedException ทุกครั้งที่ลูกค้าปิดแท็บ
+                         *
+                         * ไม่ใช่ช่องโหว่ เพราะ ASYNC/ERROR dispatch เกิดได้เฉพาะกับ request
+                         * ที่ผ่านการตรวจสิทธิ์ในรอบแรกมาแล้วเท่านั้น
+                         */
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/public/**").permitAll()

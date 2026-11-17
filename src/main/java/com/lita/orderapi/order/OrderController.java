@@ -1,6 +1,7 @@
 package com.lita.orderapi.order;
 
 import com.lita.orderapi.common.ApiException;
+import com.lita.orderapi.common.PageResponse;
 import com.lita.orderapi.order.dto.CreateOrderRequest;
 import com.lita.orderapi.order.dto.OrderDto;
 import jakarta.validation.Valid;
@@ -60,7 +61,7 @@ public class OrderController {
 
     /** ประวัติออเดอร์ พร้อม filter และแบ่งหน้า */
     @GetMapping
-    public Page<OrderDto> search(
+    public PageResponse<OrderDto> search(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) OrderStatus status,
@@ -76,8 +77,12 @@ public class OrderController {
                 ? null
                 : to.plusDays(1).atStartOfDay(DocumentNumberService.SHOP_ZONE).toInstant();
 
-        return orderService.search(fromInstant, toInstant, status, orderType, keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+        Page<OrderDto> result = orderService
+                .search(fromInstant, toInstant, status, orderType, keyword,
+                        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
                 .map(OrderDto::from);
+
+        return PageResponse.from(result);
     }
 
     private OrderStatus parseStatus(String raw) {

@@ -7,6 +7,9 @@ Spring Boot 3 · Java 21 · PostgreSQL · JWT
 
 ## 1. รันบนเครื่อง
 
+> Postgres ของโปรเจกต์นี้ใช้พอร์ต **5433** ฝั่งเครื่อง (ไม่ใช่ 5432)
+> เพื่อไม่ให้ชนกับ Postgres ตัวอื่นที่อาจรันอยู่แล้ว
+
 ```bash
 # 1) ยก Postgres ขึ้นมา (ฟรี ไม่กินโควต้า cloud)
 docker compose up -d
@@ -137,7 +140,7 @@ Flyway จะสร้างตารางและใส่เมนูตั�
 
 | ตัวแปร | ค่าเริ่มต้น | ต้องตั้งใหม่ตอน deploy |
 |---|---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/lita_order` | ✅ ชี้ไป Neon |
+| `DB_URL` | `jdbc:postgresql://localhost:5433/lita_order` | ✅ ชี้ไป Neon |
 | `DB_USERNAME` / `DB_PASSWORD` | `lita` / `lita_dev_password` | ✅ |
 | `JWT_SECRET` | ค่า dev | ✅ **ต้องเปลี่ยน** อย่างน้อย 32 ตัวอักษร |
 | `JWT_EXPIRATION_HOURS` | `12` | ตามนโยบาย |
