@@ -1,0 +1,18 @@
+# ไม่ส่งของพวกนี้ขึ้นไปให้ Cloud Build
+# ยิ่งส่งน้อย build ยิ่งเร็วและไม่เสี่ยงหลุดความลับขึ้น image
+
+target/
+.git/
+.github/
+.idea/
+*.iml
+
+# ไฟล์ที่อาจมีรหัสผ่านจริง
+.env
+.env.*
+*.local
+
+docker-compose.yml
+api.http
+README.md
+DEPLOY.md
