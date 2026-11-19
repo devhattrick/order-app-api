@@ -1,6 +1,5 @@
 package com.lita.orderapi.menu.dto;
 
-import com.lita.orderapi.menu.Category;
 import com.lita.orderapi.menu.MenuItem;
 import com.lita.orderapi.option.dto.OptionGroupDto;
 
@@ -14,7 +13,7 @@ public record MenuItemDto(
         String nameTh,
         String description,
         BigDecimal price,
-        Category category,
+        UUID categoryId,
         String emoji,
         String imageUrl,
         boolean available,
@@ -27,7 +26,7 @@ public record MenuItemDto(
                 menu.getNameTh(),
                 menu.getDescription(),
                 menu.getPrice(),
-                menu.getCategory(),
+                menu.getCategory().getId(),
                 menu.getEmoji(),
                 menu.getImageUrl(),
                 menu.isAvailable(),

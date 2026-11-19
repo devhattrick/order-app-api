@@ -1,5 +1,6 @@
 package com.lita.orderapi.menu;
 
+import com.lita.orderapi.category.MenuCategory;
 import com.lita.orderapi.option.OptionGroup;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,9 +34,13 @@ public class MenuItem {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Category category;
+    /**
+     * หมวดหมู่ — ผูกกับตาราง menu_category ไม่ใช่ enum ในโค้ดแล้ว
+     * EAGER เพราะทุกหน้าจอที่แสดงเมนูต้องใช้ชื่อหมวดเสมอ
+     */
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private MenuCategory category;
 
     /** ไอคอนสำรอง ใช้ตอนยังไม่มีรูปหรือรูปโหลดไม่ขึ้น */
     private String emoji;

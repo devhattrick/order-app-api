@@ -1,6 +1,5 @@
 package com.lita.orderapi.order;
 
-import com.lita.orderapi.menu.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,9 +32,9 @@ public class OrderItem {
     @Column(name = "menu_name", nullable = false)
     private String menuName;
 
-    @Enumerated(EnumType.STRING)
+    /** ชื่อหมวด ณ เวลาที่สั่ง — เก็บเป็นข้อความ ไม่ผูก FK เพื่อให้ใบเสร็จเก่าไม่เปลี่ยนตามการแก้หมวด */
     @Column(nullable = false)
-    private Category category;
+    private String category;
 
     private String emoji;
 

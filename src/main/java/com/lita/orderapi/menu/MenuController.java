@@ -28,9 +28,9 @@ public class MenuController {
     private final MenuService menuService;
 
     @GetMapping
-    public List<MenuItemDto> list(@RequestParam(required = false) Category category,
+    public List<MenuItemDto> list(@RequestParam(required = false) UUID categoryId,
                                   @RequestParam(required = false) Boolean availableOnly) {
-        return menuService.findAll(category, availableOnly).stream().map(MenuItemDto::from).toList();
+        return menuService.findAll(categoryId, availableOnly).stream().map(MenuItemDto::from).toList();
     }
 
     @GetMapping("/{id}")

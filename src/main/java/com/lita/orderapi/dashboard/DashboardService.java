@@ -1,7 +1,6 @@
 package com.lita.orderapi.dashboard;
 
 import com.lita.orderapi.dashboard.dto.DashboardSummary;
-import com.lita.orderapi.menu.Category;
 import com.lita.orderapi.menu.MenuRepository;
 import com.lita.orderapi.order.*;
 import lombok.RequiredArgsConstructor;
@@ -105,7 +104,9 @@ public class DashboardService {
     }
 
     private List<DashboardSummary.CategorySales> buildCategorySales(List<ShopOrder> source) {
-        Map<Category, BigDecimal> byCategory = new EnumMap<>(Category.class);
+        // ใช้ชื่อหมวดที่เก็บไว้ใน order_item ไม่ใช่หมวดปัจจุบัน
+        // รายงานย้อนหลังจึงคงเดิมแม้ร้านจะเปลี่ยนชื่อหรือลบหมวดไปแล้ว
+        Map<String, BigDecimal> byCategory = new java.util.HashMap<>();
 
         source.stream()
                 .flatMap(order -> order.getItems().stream())

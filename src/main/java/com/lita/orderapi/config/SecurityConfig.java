@@ -35,6 +35,7 @@ import java.util.List;
  * ADMIN เท่านั้น  /api/dashboard/**                 ดูยอดขายและรายงาน
  *                POST/PUT/DELETE /api/menus/**      เพิ่ม/แก้ไข/ลบเมนู
  *                POST/PUT/DELETE /api/option-groups/**  จัดการตัวเลือกเสริม
+ *                POST/PUT/DELETE /api/categories/**     จัดการหมวดหมู่เมนู
  *
  * STAFF + ADMIN  ที่เหลือทั้งหมด เช่น รับออเดอร์ เปลี่ยนสถานะ เช็คบิล
  *                รวมถึง PATCH /api/menus/{id}/availability เพื่อกดปิดขายตอนของหมด
@@ -82,6 +83,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/option-groups/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/option-groups/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/option-groups/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

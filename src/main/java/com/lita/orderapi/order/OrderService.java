@@ -84,7 +84,7 @@ public class OrderService {
         OrderItem item = new OrderItem();
         item.setMenuId(menu.getId());
         item.setMenuName(menu.getName());
-        item.setCategory(menu.getCategory());
+        item.setCategory(menu.getCategory().getName());
         item.setEmoji(menu.getEmoji());
         item.setQty(input.qty());
         item.setNote(blankToNull(input.note()));

@@ -1,5 +1,6 @@
 package com.lita.orderapi.menu;
 
+import com.lita.orderapi.category.MenuCategoryService;
 import com.lita.orderapi.common.ApiException;
 import com.lita.orderapi.menu.dto.SaveMenuRequest;
 import com.lita.orderapi.option.OptionGroup;
@@ -17,12 +18,13 @@ public class MenuService {
 
     private final MenuRepository menus;
     private final OptionGroupRepository optionGroups;
+    private final MenuCategoryService categoryService;
 
     @Transactional(readOnly = true)
-    public List<MenuItem> findAll(Category category, Boolean availableOnly) {
-        List<MenuItem> result = category == null
+    public List<MenuItem> findAll(UUID categoryId, Boolean availableOnly) {
+        List<MenuItem> result = categoryId == null
                 ? menus.findAllByOrderBySortOrderAscNameAsc()
-                : menus.findAllByCategoryOrderBySortOrderAscNameAsc(category);
+                : menus.findAllByCategoryIdOrderBySortOrderAscNameAsc(categoryId);
 
         if (Boolean.TRUE.equals(availableOnly)) {
             return result.stream().filter(MenuItem::isAvailable).toList();
@@ -76,7 +78,7 @@ public class MenuService {
                 : request.nameTh().trim());
         menu.setDescription(request.description());
         menu.setPrice(request.price());
-        menu.setCategory(request.category());
+        menu.setCategory(categoryService.findById(request.categoryId()));
         menu.setEmoji(request.emoji());
         menu.setImageUrl(request.imageUrl());
         menu.setAvailable(request.available() == null || request.available());

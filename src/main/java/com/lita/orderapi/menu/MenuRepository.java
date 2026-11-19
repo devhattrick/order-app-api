@@ -9,5 +9,8 @@ public interface MenuRepository extends JpaRepository<MenuItem, UUID> {
 
     List<MenuItem> findAllByOrderBySortOrderAscNameAsc();
 
-    List<MenuItem> findAllByCategoryOrderBySortOrderAscNameAsc(Category category);
+    List<MenuItem> findAllByCategoryIdOrderBySortOrderAscNameAsc(UUID categoryId);
+
+    /** ใช้ตอนเช็คว่าหมวดหมู่ยังมีเมนูใช้อยู่ไหม ก่อนอนุญาตให้ลบ */
+    long countByCategoryId(UUID categoryId);
 }

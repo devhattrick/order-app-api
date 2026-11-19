@@ -1,6 +1,5 @@
 package com.lita.orderapi.dashboard.dto;
 
-import com.lita.orderapi.menu.Category;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,7 +24,7 @@ public record DashboardSummary(
     public record HourlyOrders(int hour, double averageOrders) {
     }
 
-    public record CategorySales(Category category, BigDecimal revenue) {
+    public record CategorySales(String category, BigDecimal revenue) {
     }
 
     public record TopMenu(String menuName, long qty, BigDecimal revenue) {

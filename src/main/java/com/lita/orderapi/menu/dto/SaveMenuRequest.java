@@ -1,6 +1,5 @@
 package com.lita.orderapi.menu.dto;
 
-import com.lita.orderapi.menu.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -22,7 +21,7 @@ public record SaveMenuRequest(
         BigDecimal price,
 
         @NotNull(message = "กรุณาเลือกหมวดหมู่")
-        Category category,
+        UUID categoryId,
 
         String emoji,
 

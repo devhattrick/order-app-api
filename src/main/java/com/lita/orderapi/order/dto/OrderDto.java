@@ -1,6 +1,5 @@
 package com.lita.orderapi.order.dto;
 
-import com.lita.orderapi.menu.Category;
 import com.lita.orderapi.order.*;
 
 import java.math.BigDecimal;
@@ -30,7 +29,7 @@ public record OrderDto(
     public record ItemDto(
             UUID menuId,
             String menuName,
-            Category category,
+            String category,
             String emoji,
             int qty,
             BigDecimal unitPrice,
